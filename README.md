@@ -78,6 +78,6 @@ Navigation is done through keyboard inputs. All actions happen within the termin
 
 ## 👩‍💻 Author
 
-* S B Thejaswini *
+* *S B Thejaswini *
 * ENGINEERING STUDENT
-*  
+  
