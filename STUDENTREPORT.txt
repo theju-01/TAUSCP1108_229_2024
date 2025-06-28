@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Student {
+char name[50];
+int rollNo;
+float marks[5];
+float average;
+char grade;
+};
+void calculateGrade(struct Student *s) {
+float sum = 0;
+int i;
+for (i = 0; i < 5; i++) {
+sum += s->marks[i];
+}
+s->average = sum / 5;
+if (s->average >= 90) s->grade = 'A';
+else if (s->average >= 75) s->grade = 'B';
+else if (s->average >= 60) s->grade = 'C';
+else if (s->average >= 50) s->grade = 'D';
+else s->grade = 'F';
+}
+void displayReport(struct Student s) {
+printf("\n.................................................\n");
+printf("                 REPORT CARD                    \n");
+printf(".................................................\n");
+printf("Name     : %s\n", s.name);
+printf("Roll No. : %d\n", s.rollNo);
+printf(".................................................\n");
+{
+int i;
+for (i = 0; i < 5; i++) {
+printf("Subject %d Marks: %.2f\n", i + 1, s.marks[i]);
+}
+}
+printf(".................................................\n");
+printf("Average Marks: %.2f\n", s.average);
+printf("Grade        : %c\n", s.grade);
+printf(".................................................\n");
+}
+void saveToFile(struct Student s) {
+FILE *fp = fopen("report_card.dat", "ab");
+if (fp == NULL) {
+printf("Error opening file.\n");
+return;
+}
+fwrite(&s, sizeof(struct Student), 1, fp);
+fclose(fp);
+}
+void searchStudent(int rollNo) {
+FILE *fp;
+struct Student s;
+int found = 0;
+fp = fopen("report_card.dat", "rb");
+if(fp == NULL) {
+printf("No data found.\n");
+return;
+}
+while (fread(&s, sizeof(struct Student), 1, fp)) {
+if (s.rollNo == rollNo) {
+displayReport(s);
+found = 1;
+break;
+}
+}
+fclose(fp);
+if (!found) {
+printf("Student with roll number %d not found.\n", rollNo);
+}
+}int main() {
+int choice;
+do {
+printf("\n========== STUDENT REPORT CARD SYSTEM ==========\n");
+printf("1. Enter New Student Record\n");
+printf("2. Search Student by Roll Number\n");
+printf("3. Exit\n");
+printf("Enter your choice: ");
+scanf("%d", &choice);
+if (choice == 1) {
+struct Student s;
+int i;
+printf("Enter student name: ");
+fflush(stdin);
+gets(s.name);
+printf("Enter roll number: ");
+scanf("%d", &s.rollNo);
+for (i = 0; i < 5; i++) {
+printf("Enter marks for subject %d: ", i + 1);
+scanf("%f", &s.marks[i]);
+}
+calculateGrade(&s);
+displayReport(s);
+saveToFile(s);
+}else if (choice == 2) {
+int rollNo;
+printf("Enter roll number to search: ");
+scanf("%d", &rollNo);
+searchStudent(rollNo);
+} else if (choice == 3) {
+printf("Exiting program. Goodbye!\n");
+} else {
+printf("Invalid choice. Try again.\n");
+}
+}while(choice != 3);
+return 0;
+}
